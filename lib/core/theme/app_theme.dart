@@ -15,10 +15,13 @@ class AppTheme {
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: Colors.grey[50],
-      appBarTheme: const AppBarTheme(
-        centerTitle: true,
-        elevation: 0,
-        scrolledUnderElevation: 0,
+      appBarTheme: const AppBarTheme(centerTitle: true, elevation: 0, scrolledUnderElevation: 0),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Colors.white,
+        selectedItemColor: Color(0xFF4CAF50),
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: TextStyle(fontSize: 12),
+        unselectedLabelStyle: TextStyle(fontSize: 12),
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
@@ -34,9 +37,7 @@ class AppTheme {
           backgroundColor: const Color(0xFF4CAF50),
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -44,9 +45,7 @@ class AppTheme {
           foregroundColor: const Color(0xFF4CAF50),
           side: const BorderSide(color: Color(0xFF4CAF50)),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
@@ -60,9 +59,7 @@ class AppTheme {
         labelStyle: const TextStyle(color: Colors.black87),
         secondaryLabelStyle: const TextStyle(color: Colors.white),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       textTheme: TextTheme(
         displayLarge: const TextStyle(
@@ -80,18 +77,9 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: Colors.black87,
         ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          color: Colors.grey[800],
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 14,
-          color: Colors.grey[700],
-        ),
-      ).apply(
-        bodyColor: Colors.black87,
-        displayColor: Colors.black87,
-      ),
+        bodyLarge: TextStyle(fontSize: 16, color: Colors.grey[800]),
+        bodyMedium: TextStyle(fontSize: 14, color: Colors.grey[700]),
+      ).apply(bodyColor: Colors.black87, displayColor: Colors.black87),
     );
   }
 

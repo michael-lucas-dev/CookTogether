@@ -1,5 +1,5 @@
+import 'package:cooktogether/ui/templates/main_screen_template.dart';
 import 'package:flutter/material.dart';
-import 'package:cooktogether/router/router_extensions.dart';
 
 class RecipeListScreen extends StatelessWidget {
   const RecipeListScreen({super.key});
@@ -9,11 +9,8 @@ class RecipeListScreen extends StatelessWidget {
     // Liste factice de recettes pour l'exemple
     final recipes = List.generate(10, (index) => 'Recette ${index + 1}');
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mes Recettes'),
-        actions: [IconButton(icon: const Icon(Icons.logout), onPressed: () => context.goToLogin())],
-      ),
+    return MainScreenTemplate(
+      title: 'Recettes',
       body: ListView.builder(
         itemCount: recipes.length,
         itemBuilder: (context, index) {
@@ -22,11 +19,19 @@ class RecipeListScreen extends StatelessWidget {
             leading: const CircleAvatar(child: Icon(Icons.restaurant)),
             title: Text(recipes[index]),
             subtitle: const Text('Cliquez pour voir les détails'),
-            onTap: () => context.goToRecipeDetail(recipeId),
+            //onTap: () => context.push(Locations.recipeDetail(recipeId)),
             trailing: const Icon(Icons.chevron_right),
           );
         },
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () => {
+            //TODO: Search
+          },
+        ),
+      ],
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // TODO: Implémenter l'ajout d'une recette

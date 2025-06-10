@@ -1,166 +1,54 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooktogether/data/repositories/recipe_repository.dart';
-import 'package:cooktogether/models/recipe.dart';
-import 'package:cooktogether/providers/auth_providers.dart';
-import 'package:cooktogether/providers/firebase_providers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cooktogether/core/logger.dart';
+import 'package:go_router/go_router.dart';
+import 'package:cooktogether/router/app_router.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  final _recipeRepository = RecipeRepository(FirebaseFirestore.instance);
-  final _scrollController = ScrollController();
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    AppLogger.info('Initialisation de l\'écran d\'accueil');
-  }
+  static const List<Widget> _widgetOptions = <Widget>[
+    Icon(Icons.restaurant_menu, size: 120),
+    Icon(Icons.calendar_today, size: 120),
+    Icon(Icons.shopping_cart, size: 120),
+    Icon(Icons.people, size: 120),
+  ];
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
+  static const List<String> _routeNames = [
+    Locations.recipes,
+    Locations.planning,
+    Locations.shopping,
+    Locations.community,
+  ];
 
-  void _showAddRecipeDialog() async {
-    final user = ref.read(authStateProvider).value;
+  static const List<String> _menuTitles = ['Recettes', 'Planning', 'Courses', 'Communauté'];
 
-    if (user == null) {
-      AppLogger.info('Utilisateur non connecté lors de l\'ajout de recette');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Veuillez vous connecter pour ajouter une recette')),
-      );
-      return;
-    }
-
-    try {
-      AppLogger.info('Affichage du dialogue d\'ajout de recette');
-      final result = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Ajouter une recette'),
-          content: const Text('Voulez-vous ajouter une nouvelle recette ?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Annuler'),
-            ),
-            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Ajouter')),
-          ],
-        ),
-      );
-
-      if (result ?? false) {
-        AppLogger.info('Création d\'une nouvelle recette');
-        // TODO: Implémenter la création de recette
-      }
-    } catch (e, stackTrace) {
-      AppLogger.error('Erreur lors de l\'affichage du dialogue d\'ajout de recette', e, stackTrace);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Erreur: ${e.toString()}')));
-    }
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    context.push(_routeNames[index]);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('CookTogether'),
-        actions: [
-          IconButton(icon: const Icon(Icons.add), onPressed: _showAddRecipeDialog),
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // TODO: Implement search
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              try {
-                AppLogger.info('Déconnexion en cours');
-                await ref.read(authServiceProvider).signOut();
-                AppLogger.info('Déconnexion réussie');
-              } catch (e, stackTrace) {
-                AppLogger.error('Erreur lors de la déconnexion', e, stackTrace);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Erreur lors de la déconnexion: ${e.toString()}')),
-                );
-              }
-            },
-          ),
+      body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.restaurant_menu), label: 'Recettes'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Planning'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Courses'),
+          BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Communauté'),
         ],
-      ),
-      body: FutureBuilder<List<Recipe>>(
-        future: _recipeRepository.getRecipes(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            AppLogger.info('Chargement des recettes');
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            AppLogger.error('Erreur lors du chargement des recettes', snapshot.error);
-            return Center(child: Text('Erreur: ${snapshot.error}'));
-          }
-
-          final recipes = snapshot.data ?? [];
-          AppLogger.info('${recipes.length} recettes chargées avec succès');
-
-          if (recipes.isEmpty) {
-            return const Center(child: Text('Aucune recette disponible'));
-          }
-
-          return ListView.builder(
-            controller: _scrollController,
-            itemCount: recipes.length,
-            itemBuilder: (context, index) {
-              final recipe = recipes[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      recipe.imageUrl,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        AppLogger.error('Erreur lors du chargement de l\'image', error, stackTrace);
-                        return const Icon(Icons.error);
-                      },
-                    ),
-                  ),
-                  title: Text(recipe.title),
-                  subtitle: Text(
-                    '${recipe.cookingTime} min • ${recipe.ingredients.length} ingrédients',
-                  ),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.favorite_border),
-                    onPressed: () {
-                      AppLogger.info('Ajout aux favoris pour la recette: ${recipe.title}');
-                      // TODO: Implement favorite
-                    },
-                  ),
-                  onTap: () {
-                    AppLogger.info('Affichage des détails de la recette: ${recipe.title}');
-                    // TODO: Navigate to recipe details
-                  },
-                ),
-              );
-            },
-          );
-        },
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
       ),
     );
   }

@@ -1,8 +1,9 @@
 import 'package:cooktogether/providers/firebase_providers.dart';
+import 'package:cooktogether/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cooktogether/core/logger.dart';
-import 'package:cooktogether/ui/pages/auth/register_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -36,7 +37,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
         AppLogger.info('Connexion réussie');
         if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/home');
+          context.go(Locations.accueilConnecte);
         }
       } catch (e, stackTrace) {
         AppLogger.error('Erreur lors de la connexion', e, stackTrace);
@@ -100,10 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               TextButton(
                 onPressed: () {
                   AppLogger.info('Redirection vers l\'écran d\'inscription');
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                  );
+                  context.push(Locations.register);
                 },
                 child: const Text('Créer un compte'),
               ),

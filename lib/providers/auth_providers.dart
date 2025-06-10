@@ -6,3 +6,6 @@ final authStateProvider = StreamProvider<UserModel?>((ref) {
   final auth = ref.watch(authServiceProvider);
   return auth.user;
 });
+
+final authStateUserProvider = StateProvider<UserModel?>((ref) => null);
+  

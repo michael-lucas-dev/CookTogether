@@ -1,7 +1,9 @@
 import 'package:cooktogether/providers/firebase_providers.dart';
+import 'package:cooktogether/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cooktogether/core/logger.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -48,7 +50,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Compte créé avec succès')));
-          Navigator.of(context).pushReplacementNamed('/home');
+          context.go(Locations.accueilConnecte);
         }
       } catch (e, stackTrace) {
         AppLogger.error('Erreur lors de l\'inscription', e, stackTrace);
@@ -144,7 +146,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               TextButton(
                 onPressed: () {
                   AppLogger.info('Redirection vers l\'écran de connexion');
-                  Navigator.of(context).pushReplacementNamed('/login');
+                  context.push(Locations.login);
                 },
                 child: const Text('J\'ai déjà un compte'),
               ),
