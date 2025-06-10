@@ -1,7 +1,12 @@
 allprojects {
-    repositories {
-        google()
-        mavenCentral()
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            project.android {
+                if (namespace == null) {
+                    namespace project.group
+                }
+            }
+        }
     }
 }
 

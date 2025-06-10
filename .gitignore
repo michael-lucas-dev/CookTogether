@@ -5,7 +5,7 @@
 *.swp
 .DS_Store
 .atom/
-.build/
+build/
 .buildlog/
 .history
 .svn/
@@ -63,3 +63,5 @@ Thumbs.db
 
 # Local development files
 pubspec_overrides.yaml
+
+.dart_tool/

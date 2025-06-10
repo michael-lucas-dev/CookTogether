@@ -11,8 +11,18 @@ pluginManagement {
 
     repositories {
         google()
-        mavenCentral()
-        gradlePluginPortal()
+        mavenLocal()
+        maven {
+            url "https://nexus.maif.io/repository/maven-public/"
+            metadataSources {
+                mavenPom()
+                artifact()
+            }
+            credentials {
+                username "$mavenUser"
+                password "$mavenPassword"
+            }
+        }
     }
 }
 

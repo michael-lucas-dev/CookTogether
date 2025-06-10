@@ -1,62 +1,54 @@
-import 'dart:async';
 import 'dart:ui';
 
-import 'package:cooktogether/core/routes/app_router.dart';
+import 'package:cooktogether/router/app_router.dart';
 import 'package:cooktogether/core/theme/app_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_performance/firebase_performance.dart';
+import 'package:cooktogether/firebase_options.dart';
+import 'package:cooktogether/core/logger.dart';
 
 void main() async {
-  await runZonedGuarded<Future<void>>(
-    () async {
-      WidgetsFlutterBinding.ensureInitialized();
-      await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized();
 
-      final crashlytics = FirebaseCrashlytics.instance;
-      crashlytics.setCrashlyticsCollectionEnabled(true);
+  try {
+    AppLogger.info('Début de l\'application');
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-      PlatformDispatcher.instance.onError = (error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-        return true;
-      };
+    final crashlytics = FirebaseCrashlytics.instance;
+    crashlytics.setCrashlyticsCollectionEnabled(true);
 
-      final performance = FirebasePerformance.instance;
-      await performance.setPerformanceCollectionEnabled(true);
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
 
-      runApp(const ProviderScope(child: MainApp()));
-    },
-    (error, stackTrace) {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
-    },
-  );
+    final performance = FirebasePerformance.instance;
+    await performance.setPerformanceCollectionEnabled(true);
+
+    runApp(const ProviderScope(child: MainApp()));
+    AppLogger.info('Application démarrée avec succès');
+  } catch (e, stackTrace) {
+    AppLogger.error('Erreur lors du démarrage de l\'application', e, stackTrace);
+    debugPrint('Firebase initialization error: $e');
+    runApp(const ProviderScope(child: MainApp()));
+  }
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final router = AppRouter.router;
+  Widget build(BuildContext context, WidgetRef ref) {
+    AppLogger.info('Construction de l\'interface utilisateur');
     return MaterialApp.router(
       title: 'Cook Together',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.system,
-      routeInformationProvider: router.routeInformationProvider,
-      routeInformationParser: router.routeInformationParser,
-      routerDelegate: router.routerDelegate,
-      builder: (context, child) {
-        // Enregistrer les erreurs de rendu UI
-        ErrorWidget.builder = (FlutterErrorDetails errorDetails) {
-          FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
-          return ErrorWidget(errorDetails.exception);
-        };
-        return child!;
-      },
+      routerConfig: ref.watch(routerProvider),
     );
   }
 }
