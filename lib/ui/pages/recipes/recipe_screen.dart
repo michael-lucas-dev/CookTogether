@@ -1,8 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cooktogether/data/repositories/recipe_repository.dart';
 import 'package:cooktogether/models/recipe.dart';
 import 'package:cooktogether/providers/auth_providers.dart';
-import 'package:cooktogether/providers/firebase_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cooktogether/core/logger.dart';
@@ -16,7 +13,6 @@ class RecipeScreen extends ConsumerStatefulWidget {
 }
 
 class _RecipeScreenState extends ConsumerState<RecipeScreen> {
-  final _recipeRepository = RecipeRepository(FirebaseFirestore.instance);
   final _scrollController = ScrollController();
 
   @override
@@ -84,7 +80,7 @@ class _RecipeScreenState extends ConsumerState<RecipeScreen> {
         ],
       ),
       body: FutureBuilder<List<Recipe>>(
-        future: _recipeRepository.getRecipes(),
+        future: Future.delayed(const Duration(seconds: 2)).then((value) => []),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             AppLogger.info('Chargement des recettes');

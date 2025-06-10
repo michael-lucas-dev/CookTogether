@@ -1,15 +1,12 @@
 import 'package:cooktogether/core/logger.dart';
 import 'package:cooktogether/providers/router_providers.dart';
-import 'package:cooktogether/ui/components/base_page.dart';
 import 'package:cooktogether/ui/components/main_navigation.dart';
-import 'package:cooktogether/ui/enums.dart';
 import 'package:cooktogether/ui/pages/auth/login_screen.dart';
 import 'package:cooktogether/ui/pages/auth/register_screen.dart';
 import 'package:cooktogether/ui/pages/community_screen.dart';
 import 'package:cooktogether/ui/pages/home_screen.dart';
 import 'package:cooktogether/ui/pages/planning_screen.dart';
 import 'package:cooktogether/ui/pages/recipes/recipe_detail_screen.dart';
-import 'package:cooktogether/ui/pages/recipes/recipe_screen.dart';
 import 'package:cooktogether/ui/pages/recipes/recipe_list_screen.dart';
 import 'package:cooktogether/ui/pages/shopping_screen.dart';
 import 'package:cooktogether/ui/widgets/auth_state_handler.dart';
