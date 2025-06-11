@@ -1,6 +1,6 @@
 import 'package:cooktogether/core/logger.dart';
 import 'package:cooktogether/providers/firebase_providers.dart';
-import 'package:cooktogether/ui/components/main_navigation.dart';
+import 'package:cooktogether/ui/widgets/main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,15 +1,15 @@
 import 'package:cooktogether/core/logger.dart';
 import 'package:cooktogether/providers/router_providers.dart';
-import 'package:cooktogether/ui/components/main_navigation.dart';
-import 'package:cooktogether/ui/pages/auth/login_screen.dart';
-import 'package:cooktogether/ui/pages/auth/register_screen.dart';
-import 'package:cooktogether/ui/pages/auth/welcome_screen.dart';
-import 'package:cooktogether/ui/pages/community_screen.dart';
-import 'package:cooktogether/ui/pages/planning_screen.dart';
-import 'package:cooktogether/ui/pages/recipes/add_recipe_screen.dart';
-import 'package:cooktogether/ui/pages/recipes/recipe_detail_screen.dart';
-import 'package:cooktogether/ui/pages/recipes/recipe_list_screen.dart';
-import 'package:cooktogether/ui/pages/shopping_screen.dart';
+import 'package:cooktogether/ui/widgets/main_navigation.dart';
+import 'package:cooktogether/ui/screens/auth/login_screen.dart';
+import 'package:cooktogether/ui/screens/auth/register_screen.dart';
+import 'package:cooktogether/ui/screens/auth/welcome_screen.dart';
+import 'package:cooktogether/ui/screens/community/community_screen.dart';
+import 'package:cooktogether/ui/screens/planning/planning_screen.dart';
+import 'package:cooktogether/ui/screens/recipes/add_recipe_screen.dart';
+import 'package:cooktogether/ui/screens/recipes/recipe_detail_screen.dart';
+import 'package:cooktogether/ui/screens/recipes/recipe_list_screen.dart';
+import 'package:cooktogether/ui/screens/shopping/shopping_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -61,13 +61,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Locations.welcome, builder: (context, state) => const WelcomeScreen()),
       GoRoute(path: Locations.login, builder: (context, state) => const LoginScreen()),
       GoRoute(path: Locations.register, builder: (context, state) => const RegisterScreen()),
-      GoRoute(
-        path: '${Locations.recipes}/:recipeId',
-        builder: (context, state) {
-          final recipeId = state.pathParameters['recipeId']!;
-          return RecipeDetailScreen();
-        },
-      ),
       GoRoute(path: Locations.addRecipe, builder: (context, state) => const AddRecipeScreen()),
     ],
     errorBuilder: (context, state) {
