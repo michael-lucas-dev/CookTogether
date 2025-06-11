@@ -23,9 +23,7 @@ final redirectProvider = Provider<Function(BuildContext, GoRouterState)>((ref) {
   };
 });
 
-final redirectionServiceProvider = Provider(
-  (ref) => RedirectionService(),
-);
+final redirectionServiceProvider = Provider((ref) => RedirectionService());
 
 class RouterNotifier extends ChangeNotifier {
   final Ref _ref;
@@ -39,17 +37,36 @@ class RouterNotifier extends ChangeNotifier {
 
   Future<String?> redirectLogic(BuildContext context, GoRouterState state) async {
     final authState = _ref.read(authStateProvider);
+    final redirectionService = _ref.read(redirectionServiceProvider);
 
     return authState.when(
       data: (user) async {
-        final redirectionUri = await _ref.read(redirectionServiceProvider).getRedirectionUri(
-          uri: state.uri,
-          destination: state.matchedLocation,
+        // Pour la première arrivée sur l'app
+        if (state.uri.toString() == '/') {
+          if (user == null) {
+            AppLogger.info('Redirection vers /login car utilisateur non connecté');
+            return Locations.login;
+          } else {
+            AppLogger.info('Redirection vers /recipes car utilisateur connecté');
+            return Locations.recipes;
+          }
+        }
+
+        // Pour les autres routes, utiliser le service de redirection
+        final uri = Uri.parse(state.uri.toString());
+        final destination = state.uri.toString();
+
+        final redirectionUri = await redirectionService.getRedirectionUri(
+          uri: uri,
+          destination: destination,
           user: user,
         );
+
         if (redirectionUri != null) {
+          AppLogger.info('Redirection vers: $redirectionUri');
           return redirectionUri;
         }
+
         return null;
       },
       loading: () => null,

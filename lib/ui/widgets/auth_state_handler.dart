@@ -1,5 +1,5 @@
 import 'package:cooktogether/providers/auth_providers.dart';
-import 'package:cooktogether/ui/pages/home_screen.dart';
+import 'package:cooktogether/ui/pages/recipes/recipe_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cooktogether/ui/pages/auth/login_screen.dart';
@@ -14,7 +14,7 @@ class AuthStateHandler extends ConsumerWidget {
     return authState.when(
       data: (user) {
         if (user != null) {
-          return const HomeScreen();
+          return const RecipeListScreen();
         }
         return const LoginScreen();
       },

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cooktogether/models/user_model.dart';
 import '../core/logger.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' show DocumentReference, DocumentSnapshot, QuerySnapshot, Query;
 
 class FirestoreService {
   final FirebaseFirestore _firestore;
@@ -8,7 +9,7 @@ class FirestoreService {
   FirestoreService(this._firestore);
 
   // Méthode générique pour ajouter un document
-  Future<void> addDocument(String collectionPath, Map<String, dynamic> data) {
+  Future<DocumentReference> addDocument(String collectionPath, Map<String, dynamic> data) {
     return _firestore.collection(collectionPath).add(data);
   }
 

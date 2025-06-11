@@ -146,7 +146,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               TextButton(
                 onPressed: () {
                   AppLogger.info('Redirection vers l\'écran de connexion');
-                  context.push(Locations.login);
+                  context.go(Locations.login);
                 },
                 child: const Text('J\'ai déjà un compte'),
               ),

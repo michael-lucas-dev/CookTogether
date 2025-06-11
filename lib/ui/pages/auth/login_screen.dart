@@ -37,7 +37,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
         AppLogger.info('Connexion réussie');
         if (mounted) {
-          context.go(Locations.accueilConnecte);
+          context.go(Locations.recipes);
         }
       } catch (e, stackTrace) {
         AppLogger.error('Erreur lors de la connexion', e, stackTrace);
@@ -101,7 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               TextButton(
                 onPressed: () {
                   AppLogger.info('Redirection vers l\'écran d\'inscription');
-                  context.push(Locations.register);
+                  context.go(Locations.register);
                 },
                 child: const Text('Créer un compte'),
               ),

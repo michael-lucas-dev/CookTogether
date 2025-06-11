@@ -3,13 +3,13 @@ import 'package:cooktogether/providers/router_providers.dart';
 import 'package:cooktogether/ui/components/main_navigation.dart';
 import 'package:cooktogether/ui/pages/auth/login_screen.dart';
 import 'package:cooktogether/ui/pages/auth/register_screen.dart';
+import 'package:cooktogether/ui/pages/auth/welcome_screen.dart';
 import 'package:cooktogether/ui/pages/community_screen.dart';
-import 'package:cooktogether/ui/pages/home_screen.dart';
 import 'package:cooktogether/ui/pages/planning_screen.dart';
+import 'package:cooktogether/ui/pages/recipes/add_recipe_screen.dart';
 import 'package:cooktogether/ui/pages/recipes/recipe_detail_screen.dart';
 import 'package:cooktogether/ui/pages/recipes/recipe_list_screen.dart';
 import 'package:cooktogether/ui/pages/shopping_screen.dart';
-import 'package:cooktogether/ui/widgets/auth_state_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,6 +25,7 @@ class Locations {
   static const shopping = "/shopping";
   static const community = "/community";
   static const welcome = "/welcome";
+  static const addRecipe = "${Locations.recipes}/add";
 
   Locations._();
 }
@@ -46,10 +47,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) {
-          return Scaffold(
-            body: child,
-            bottomNavigationBar: const MainNavigationBottomBar(),
-          );
+          return Scaffold(body: child, bottomNavigationBar: const MainNavigationBottomBar());
         }, // Conteneur de la BottomNav
 
         routes: [
@@ -60,9 +58,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      GoRoute(path: Locations.welcome, builder: (context, state) => const AuthStateHandler()),
+      GoRoute(path: Locations.welcome, builder: (context, state) => const WelcomeScreen()),
       GoRoute(path: Locations.login, builder: (context, state) => const LoginScreen()),
-      GoRoute(path: Locations.accueilConnecte, builder: (context, state) => const HomeScreen()),
       GoRoute(path: Locations.register, builder: (context, state) => const RegisterScreen()),
       GoRoute(
         path: '${Locations.recipes}/:recipeId',
@@ -71,6 +68,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return RecipeDetailScreen();
         },
       ),
+      GoRoute(path: Locations.addRecipe, builder: (context, state) => const AddRecipeScreen()),
     ],
     errorBuilder: (context, state) {
       AppLogger.error('Route non trouvée', state.error);
