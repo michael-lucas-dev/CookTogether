@@ -1,139 +1,151 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cooktogether/models/recipe.dart';
+import 'package:cooktogether/core/logger.dart';
+import 'package:cooktogether/providers/recipe_service_provider.dart';
 
-class RecipeDetailScreen extends StatelessWidget {
+class RecipeDetailScreen extends ConsumerWidget {
   static const String routeName = '/recipe-detail';
+  final String recipeId;
 
-  const RecipeDetailScreen({super.key});
+  const RecipeDetailScreen({Key? key, required this.recipeId}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final Recipe recipe = ModalRoute.of(context)!.settings.arguments as Recipe;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(recipe.title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border),
-            onPressed: () {
-              // TODO: Implement favorite functionality
-            },
+  Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint(recipeId);
+    final recipeService = ref.watch(recipeServiceProvider);
+
+    return FutureBuilder<Recipe?>(
+      future: recipeService.getRecipe(recipeId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+
+        if (snapshot.hasError) {
+          AppLogger.error('Erreur lors du chargement de la recette', snapshot.error);
+          return const Scaffold(
+            body: Center(child: Text('Erreur lors du chargement de la recette')),
+          );
+        }
+
+        final recipe = snapshot.data;
+        if (recipe == null) {
+          return const Scaffold(body: Center(child: Text('Recette non trouvée')));
+        }
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(recipe.title),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.favorite_border),
+                onPressed: () {
+                  // TODO: Implement favorite functionality
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image
-            Image.network(
-              recipe.imageUrl,
-              height: 300,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-            const SizedBox(height: 16),
-            
-            // Description
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                recipe.description,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-            
-            // Preparation Time
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  const Icon(Icons.access_time),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Préparation: ${recipe.preparationTime} min',
-                    style: Theme.of(context).textTheme.bodyMedium,
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image de la recette
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: Image.network(
+                    recipe.imageUrl.isNotEmpty
+                        ? recipe.imageUrl
+                        : 'https://via.placeholder.com/400x200?text=No+Image',
+                    height: 200,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
-                ],
-              ),
-            ),
-            
-            // Cooking Time
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                children: [
-                  const Icon(Icons.timer),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Cuisson: ${recipe.cookingTime} min',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                ],
-              ),
-            ),
-            
-            // Ingredients
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Ingrédients',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                ),
+                const SizedBox(height: 16.0),
+
+                // Informations de base
+                Row(
+                  children: [
+                    _buildInfoChip(
+                      icon: Icons.timer_outlined,
+                      text: '${recipe.preparationTime} min',
                     ),
+                    const SizedBox(width: 8.0),
+                    _buildInfoChip(
+                      icon: Icons.local_fire_department_outlined,
+                      text: '${recipe.cookingTime} min',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+
+                // Description
+                Text('Description', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8.0),
+                Text(recipe.description),
+                const SizedBox(height: 24.0),
+
+                // Ingrédients
+                Text('Ingrédients', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8.0),
+                ...recipe.ingredients.map(
+                  (ingredient) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Text('• $ingredient'),
                   ),
-                  const SizedBox(height: 8),
-                  ...recipe.ingredients.map((ingredient) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                ),
+                const SizedBox(height: 24.0),
+
+                // Étapes de préparation
+                Text('Étapes de préparation', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8.0),
+                ...recipe.steps.asMap().entries.map(
+                  (entry) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.check_circle, size: 16),
-                        const SizedBox(width: 8),
-                        Text(ingredient),
-                      ],
-                    ),
-                  )),
-                ],
-              ),
-            ),
-            
-            // Steps
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Étapes',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ...recipe.steps.asMap().entries.map((entry) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          '${entry.key + 1}.',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        CircleAvatar(
+                          radius: 12,
+                          backgroundColor: Theme.of(context).primaryColor,
+                          child: Text(
+                            '${entry.key + 1}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 12.0),
                         Expanded(child: Text(entry.value)),
                       ],
                     ),
-                  )),
-                ],
-              ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              // TODO: Implement edit functionality
+            },
+            child: const Icon(Icons.edit),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildInfoChip({required IconData icon, required String text}) {
+    return Chip(
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [Icon(icon, size: 16), const SizedBox(width: 4.0), Text(text)],
       ),
+      backgroundColor: Colors.grey[200],
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
     );
   }
 }

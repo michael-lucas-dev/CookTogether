@@ -26,6 +26,7 @@ class Locations {
   static const community = "/community";
   static const welcome = "/welcome";
   static const addRecipe = "${Locations.recipes}/add";
+  static const recipeDetail = "${Locations.recipes}/:recipeId";
 
   Locations._();
 }
@@ -62,10 +63,26 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Locations.login, builder: (context, state) => const LoginScreen()),
       GoRoute(path: Locations.register, builder: (context, state) => const RegisterScreen()),
       GoRoute(path: Locations.addRecipe, builder: (context, state) => const AddRecipeScreen()),
+      GoRoute(
+        path: Locations.recipeDetail,
+        builder: (context, state) {
+          final recipeId = state.pathParameters['recipeId']!;
+          return RecipeDetailScreen(recipeId: recipeId);
+        },
+      ),
     ],
     errorBuilder: (context, state) {
       AppLogger.error('Route non trouvée', state.error);
-      return Scaffold(body: Center(child: Text('Page non trouvée')));
+      return Scaffold(
+        body: Center(
+          child: Column(
+            children: [
+              Text('Page non trouvée'),
+              ElevatedButton(child: Text("pop"), onPressed: () => context.pop()),
+            ],
+          ),
+        ),
+      );
     },
     observers: [NavigationMiddlewareObserver()],
   );
