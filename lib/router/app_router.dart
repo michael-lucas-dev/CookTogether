@@ -1,5 +1,6 @@
 import 'package:cooktogether/core/logger.dart';
 import 'package:cooktogether/providers/router_providers.dart';
+import 'package:cooktogether/ui/screens/recipes/edit_recipe_screen.dart';
 import 'package:cooktogether/ui/widgets/main_navigation.dart';
 import 'package:cooktogether/ui/screens/auth/login_screen.dart';
 import 'package:cooktogether/ui/screens/auth/register_screen.dart';
@@ -26,7 +27,8 @@ class Locations {
   static const community = "/community";
   static const welcome = "/welcome";
   static const addRecipe = "${Locations.recipes}/add";
-  static const recipeDetail = "${Locations.recipes}/:recipeId";
+  static const recipeDetail = "${Locations.recipes}/detail";
+  static const editRecipe = "${Locations.recipes}/edit";
 
   Locations._();
 }
@@ -64,22 +66,33 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Locations.register, builder: (context, state) => const RegisterScreen()),
       GoRoute(path: Locations.addRecipe, builder: (context, state) => const AddRecipeScreen()),
       GoRoute(
-        path: Locations.recipeDetail,
+        path: "${Locations.recipeDetail}/:recipeId",
         builder: (context, state) {
           final recipeId = state.pathParameters['recipeId']!;
           return RecipeDetailScreen(recipeId: recipeId);
+        },
+      ),
+      GoRoute(
+        path: "${Locations.editRecipe}/:recipeId",
+        builder: (context, state) {
+          final recipeId = state.pathParameters['recipeId']!;
+          return EditRecipeScreen(recipeId: recipeId);
         },
       ),
     ],
     errorBuilder: (context, state) {
       AppLogger.error('Route non trouvée', state.error);
       return Scaffold(
-        body: Center(
-          child: Column(
-            children: [
-              Text('Page non trouvée'),
-              ElevatedButton(child: Text("pop"), onPressed: () => context.pop()),
-            ],
+        body: SafeArea(
+          child: Expanded(
+            child: Center(
+              child: Column(
+                children: [
+                  Text('Page non trouvée'),
+                  ElevatedButton(child: Text("pop"), onPressed: () => context.pop()),
+                ],
+              ),
+            ),
           ),
         ),
       );

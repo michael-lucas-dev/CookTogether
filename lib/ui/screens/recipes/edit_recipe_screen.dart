@@ -1,23 +1,22 @@
+import 'package:cooktogether/providers/recipe_service_provider.dart';
+import 'package:cooktogether/ui/templates/base_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cooktogether/models/recipe.dart';
 import 'package:cooktogether/services/recipe_service.dart';
 import 'package:cooktogether/core/logger.dart';
+import 'package:go_router/go_router.dart';
 
-class EditRecipeForm extends StatefulWidget {
-  final Recipe recipe;
-  final RecipeService recipeService;
+class EditRecipeScreen extends ConsumerStatefulWidget {
+  final String recipeId;
 
-  const EditRecipeForm({
-    super.key,
-    required this.recipe,
-    required this.recipeService,
-  });
+  const EditRecipeScreen({super.key, required this.recipeId});
 
   @override
-  State<EditRecipeForm> createState() => _EditRecipeFormState();
+  ConsumerState<EditRecipeScreen> createState() => _EditRecipeScreenState();
 }
 
-class _EditRecipeFormState extends State<EditRecipeForm> {
+class _EditRecipeScreenState extends ConsumerState<EditRecipeScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _titleController;
   late TextEditingController _descriptionController;
@@ -27,16 +26,60 @@ class _EditRecipeFormState extends State<EditRecipeForm> {
   late TextEditingController _preparationTimeController;
   late TextEditingController _cookingTimeController;
 
+  bool _isLoading = true;
+  String? _error;
+  Recipe? _recipe;
+
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.recipe.title);
-    _descriptionController = TextEditingController(text: widget.recipe.description);
-    _imageUrlController = TextEditingController(text: widget.recipe.imageUrl);
-    _ingredientsController = TextEditingController(text: widget.recipe.ingredients.join(', '));
-    _stepsController = TextEditingController(text: widget.recipe.steps.join('\n'));
-    _preparationTimeController = TextEditingController(text: widget.recipe.preparationTime.toString());
-    _cookingTimeController = TextEditingController(text: widget.recipe.cookingTime.toString());
+    _titleController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _imageUrlController = TextEditingController();
+    _ingredientsController = TextEditingController();
+    _stepsController = TextEditingController();
+    _preparationTimeController = TextEditingController();
+    _cookingTimeController = TextEditingController();
+    _loadRecipe();
+  }
+
+  Future<void> _loadRecipe() async {
+    try {
+      final recipeService = ref.read(recipeServiceProvider);
+      final recipe = await recipeService.getRecipe(widget.recipeId);
+      if (mounted && recipe != null) {
+        setState(() {
+          _recipe = recipe;
+          _updateControllers(recipe);
+          _isLoading = false;
+        });
+      }
+      if (recipe == null) {
+        if (mounted) {
+          setState(() {
+            _error = 'Recette non trouvée';
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = 'Erreur lors du chargement de la recette';
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _updateControllers(Recipe recipe) {
+    _titleController.text = recipe.title;
+    _descriptionController.text = recipe.description;
+    _imageUrlController.text = recipe.imageUrl;
+    _ingredientsController.text = recipe.ingredients.join(', ');
+    _stepsController.text = recipe.steps.join('\n');
+    _preparationTimeController.text = recipe.preparationTime.toString();
+    _cookingTimeController.text = recipe.cookingTime.toString();
   }
 
   @override
@@ -51,11 +94,13 @@ class _EditRecipeFormState extends State<EditRecipeForm> {
     super.dispose();
   }
 
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
+  Future<void> _submitForm(BuildContext context) async {
+    if (_formKey.currentState!.validate() && _recipe != null) {
       try {
+        final recipeService = ref.read(recipeServiceProvider);
+
         final updatedRecipe = Recipe(
-          id: widget.recipe.id,
+          id: _recipe!.id,
           title: _titleController.text,
           description: _descriptionController.text,
           imageUrl: _imageUrlController.text,
@@ -63,19 +108,19 @@ class _EditRecipeFormState extends State<EditRecipeForm> {
           steps: _stepsController.text.split('\n').map((e) => e.trim()).toList(),
           preparationTime: int.parse(_preparationTimeController.text),
           cookingTime: int.parse(_cookingTimeController.text),
-          authorId: widget.recipe.authorId,
-          createdAt: widget.recipe.createdAt,
+          authorId: _recipe!.authorId,
+          createdAt: _recipe!.createdAt,
         );
 
-        await widget.recipeService.updateRecipe(updatedRecipe);
-        
+        await recipeService.updateRecipe(updatedRecipe);
+
         AppLogger.info('Recette mise à jour avec succès');
-        
-        if (mounted) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Recette mise à jour avec succès')),
-          );
+
+        if (context.mounted) {
+          context.pop();
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Recette mise à jour avec succès')));
         }
       } catch (e, stackTrace) {
         AppLogger.error('Erreur lors de la mise à jour de la recette', e, stackTrace);
@@ -90,10 +135,20 @@ class _EditRecipeFormState extends State<EditRecipeForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Modifier la recette'),
-      ),
+    if (_isLoading) {
+      return const BasePage(title: "Edit", body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (_error != null) {
+      return BasePage(title: "Edit", body: Center(child: Text(_error!)));
+    }
+
+    if (_recipe == null) {
+      return const BasePage(title: "Edit", body: Center(child: Text('Recette non trouvée')));
+    }
+
+    return BasePage(
+      title: "Edit",
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -103,10 +158,7 @@ class _EditRecipeFormState extends State<EditRecipeForm> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Titre',
-                  border: OutlineInputBorder(),
-                ),
+                decoration: const InputDecoration(labelText: 'Titre', border: OutlineInputBorder()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Veuillez entrer un titre';
@@ -211,7 +263,7 @@ class _EditRecipeFormState extends State<EditRecipeForm> {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: _submitForm,
+                onPressed: () => _submitForm(context),
                 child: const Text('Mettre à jour la recette'),
               ),
             ],

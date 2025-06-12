@@ -1,8 +1,10 @@
+import 'package:cooktogether/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cooktogether/models/recipe.dart';
 import 'package:cooktogether/core/logger.dart';
 import 'package:cooktogether/providers/recipe_service_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class RecipeDetailScreen extends ConsumerWidget {
   static const String routeName = '/recipe-detail';
@@ -129,7 +131,7 @@ class RecipeDetailScreen extends ConsumerWidget {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () {
-              // TODO: Implement edit functionality
+              context.push("${Locations.editRecipe}/${recipe.id}");
             },
             child: const Icon(Icons.edit),
           ),

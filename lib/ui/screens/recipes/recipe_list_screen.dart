@@ -47,7 +47,7 @@ class RecipeListScreen extends ConsumerWidget {
                         : const CircleAvatar(child: Icon(Icons.restaurant)),
                 title: Text(recipe.title),
                 subtitle: Text(recipe.description),
-                onTap: () => context.push("${Locations.recipes}/${recipe.id}"),
+                onTap: () => context.push("${Locations.recipeDetail}/${recipe.id}"),
                 trailing: const Icon(Icons.chevron_right),
               );
             },
