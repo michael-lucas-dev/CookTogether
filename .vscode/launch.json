@@ -5,7 +5,7 @@
       "name": "Flutter (debug)",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart",
+      "program": "app/lib/main.dart",
       "args": [
         "--dart-define=ENV=dev"
       ]
@@ -14,14 +14,14 @@
       "name": "Flutter (profile)",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart",
+      "program": "app/lib/main.dart",
       "flutterMode": "profile"
     },
     {
       "name": "Flutter (release)",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main.dart",
+      "program": "app/lib/main.dart",
       "flutterMode": "release"
     }
   ]
