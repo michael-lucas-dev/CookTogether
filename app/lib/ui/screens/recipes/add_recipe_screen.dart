@@ -220,23 +220,24 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
     final ImagePicker picker = ImagePicker();
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Depuis la galerie'),
-              onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
+      builder:
+          (ctx) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Depuis la galerie'),
+                  onTap: () => Navigator.of(ctx).pop(ImageSource.gallery),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Prendre une photo'),
+                  onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.camera_alt),
-              title: const Text('Prendre une photo'),
-              onTap: () => Navigator.of(ctx).pop(ImageSource.camera),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
     if (source != null) {
       final XFile? image = await picker.pickImage(source: source, maxWidth: 1200, maxHeight: 1200);
@@ -265,9 +266,9 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
       setState(() {
         _recognizedText = 'Erreur lors de la reconnaissance du texte';
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erreur lors de la reconnaissance du texte')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Erreur lors de la reconnaissance du texte')));
     } finally {
       setState(() {
         _isRecognizing = false;
@@ -277,7 +278,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
   }
 
   Widget _imageRecipeCapture() {
-    return Center(
+    return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -309,9 +310,14 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
             const SizedBox(height: 16),
             ElevatedButton.icon(
               icon: const Icon(Icons.text_snippet),
-              label: _isRecognizing
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Reconnaître le texte'),
+              label:
+                  _isRecognizing
+                      ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : const Text('Reconnaître le texte'),
               onPressed: _isRecognizing ? null : () => _recognizeText(context),
             ),
           ],

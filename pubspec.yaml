@@ -1,7 +1,7 @@
 name: cooktogether
 description: "Une application de recettes de cuisine collaborative"
 publish_to: 'none'
-version: 0.1.0
+version: 0.1.1
 
 environment:
   sdk: ">=3.7.2"
