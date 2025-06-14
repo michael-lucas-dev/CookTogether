@@ -207,12 +207,12 @@ fastlane/readme.md
 # Flutter/Dart/Pub
 **/doc/api/
 **/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
 
 # Web related
 lib/generated_plugin_registrant.dart

@@ -1,0 +1,124 @@
+# GitHub Actions CI/CD workflow for CookTogether Flutter project
+#
+# Triggers:
+#   - On every push to the `master` branch.
+#
+# Jobs:
+#   1. build_widgetbook: Build the Widgetbook web build and deploy it to GitHub Pages.
+#   2. distribute_android: Build the Android APK/AAB and upload to Firebase App Distribution.
+#   3. distribute_ios: Build the iOS IPA and upload to Firebase App Distribution.
+#
+# Required repository secrets (Settings ▸ Secrets and variables ▸ Actions):
+#   - FIREBASE_TOKEN              : Generated via `firebase login:ci` for authentication.
+#   - FIREBASE_ANDROID_APP_ID     : Firebase Android App ID (e.g. 1:1234567890:android:abcdef123456).
+#   - FIREBASE_IOS_APP_ID         : Firebase iOS App ID (e.g. 1:1234567890:ios:abcdef123456).
+#   - OPTIONAL: IOS_EXPORT_OPTIONS_PLIST_BASE64 : Base64-encoded export options plist for iOS signing (if needed).
+#
+# GitHub automatically provides GITHUB_TOKEN for deploying to GitHub Pages.
+
+name: cooktogether-ci
+
+on:
+  push:
+    branches: [master]
+
+# Re-usable environment variables for Flutter version and test groups
+env:
+  FLUTTER_VERSION: "3.22.x"
+  FIREBASE_TESTER_GROUPS: "testers"  # Comma-separated tester groups in Firebase App Distribution
+
+jobs:
+  # ------------------------------------------------
+  # 1. Build and deploy Widgetbook to GitHub Pages
+  # ------------------------------------------------
+  build_widgetbook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Widgetbook for web
+        # If you have a dedicated widgetbook target file, replace the command below accordingly.
+        # Example for widgetbook package: `dart run widgetbook:build --output-dir build/widgetbook`
+        run: flutter build web --web-renderer canvaskit -t design_system/lib/main.dart
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          publish_branch: gh-pages
+
+  # ------------------------------------------------
+  # 2. Build & distribute Android app via Firebase
+  # ------------------------------------------------
+  distribute_android:
+    needs: build_widgetbook
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android APK (release)
+        run: flutter build apk --release
+
+      - name: Upload to Firebase App Distribution (Android)
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: ${{ env.FIREBASE_TESTER_GROUPS }}
+          file: build/app/outputs/flutter-apk/app-release.apk
+
+  # ------------------------------------------------
+  # 3. Build & distribute iOS app via Firebase
+  # ------------------------------------------------
+  distribute_ios:
+    needs: build_widgetbook
+    runs-on: macos-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter ${{ env.FLUTTER_VERSION }}
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS IPA (release)
+        # This assumes automatic code signing is configured in Xcode.
+        # If you need a custom ExportOptions.plist, decode it from a secret and pass it via --export-options-plist.
+        run: |
+          flutter build ipa --release
+
+      - name: Locate IPA
+        id: find_ipa
+        run: |
+          echo "ipa-path=$(ls build/ios/ipa/*.ipa | head -n1)" >> $GITHUB_OUTPUT
+
+      - name: Upload to Firebase App Distribution (iOS)
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_IOS_APP_ID }}
+          token: ${{ secrets.FIREBASE_TOKEN }}
+          groups: ${{ env.FIREBASE_TESTER_GROUPS }}
+          file: ${{ steps.find_ipa.outputs.ipa-path }}
