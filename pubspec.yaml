@@ -13,5 +13,3 @@ dev_dependencies:
 workspace:
   - app
   - design_system
-dependencies:
-  google_ml_kit: ^0.20.0
