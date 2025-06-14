@@ -1,0 +1,100 @@
+name: Flutter CI & Firebase Deploy
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: "3.29.2"
+  FIREBASE_TESTER_GROUPS: "testers"
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      ####################################################################
+      # 1. Checkout du code source
+      ####################################################################
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      ####################################################################
+      # 2. Installer Flutter
+      ####################################################################
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Flutter Pub Get
+        working-directory: app
+        run: flutter pub get
+
+      ####################################################################
+      # 3. Générer le numéro de build
+      ####################################################################
+      - name: Generate build number
+        uses: onyxmueller/build-tag-number@v1
+        with:
+          token: ${{secrets.github_token}}
+
+      - name: Print new build number
+        run: echo "Build number is $BUILD_NUMBER"
+
+      ####################################################################
+      # 4. Restaurer les fichiers Firebase (depuis secrets base64)
+      ####################################################################
+      - name: Decode google-services.json
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON_B64 }}" | base64 -d > app/android/app/google-services.json
+
+      - name: Decode GoogleService-Info.plist
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST_B64 }}" | base64 -d > app/ios/Runner/GoogleService-Info.plist
+
+      ####################################################################
+      # 5. Installer Firebase CLI + FlutterFire CLI
+      ####################################################################
+      - name: Install Firebase and FlutterFire CLI
+        run: |
+          npm install -g firebase-tools
+          dart pub global activate flutterfire_cli
+
+      ####################################################################
+      # 6. Générer automatiquement firebase_options.dart
+      ####################################################################
+      - name: Generate firebase_options.dart
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          cd app
+          flutterfire configure \
+            --project=${{ secrets.FIREBASE_PROJECT_ID }} \
+            --out=lib/firebase_options.dart \
+            --android-package-name=${{ secrets.ANDROID_PACKAGE_NAME }} \
+            --platforms=${{ secrets.PLATFORMS || 'android' }}
+            --yes
+
+      ####################################################################
+      # 7. Compiler l'app Android (APK)
+      ####################################################################
+      - name: Build Android APK
+        run: flutter build apk --release
+        working-directory: app
+
+      ####################################################################
+      # 8. Déployer sur Firebase App Distribution
+      ####################################################################
+      - name: Distribute APK to Firebase App Distribution
+        run: |
+          cd app
+          firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+            --app ${{ secrets.FIREBASE_ANDROID_APP_ID }} \
+            --token ${{ secrets.FIREBASE_TOKEN }} \
+            --groups ${{ env.FIREBASE_TESTER_GROUPS }} \
+            --release-notes "📦 Build automatique ${{ github.sha }} depuis GitHub Actions"

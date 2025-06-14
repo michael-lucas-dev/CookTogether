@@ -20,7 +20,7 @@ name: cooktogether-ci
 
 on:
   push:
-    branches: [master]
+    branches: [rd]
 
 # Re-usable environment variables for Flutter version and test groups
 env:

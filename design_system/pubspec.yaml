@@ -12,8 +12,8 @@ dependencies:
     sdk: flutter
   widgetbook: ^3.14.3
   widgetbook_annotation: ^3.5.0
-  app: 0.1.1
-
+  app:
+    path: ../app
 dev_dependencies:
   flutter_test:
     sdk: flutter
