@@ -214,7 +214,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
 
   XFile? _pickedImage;
   String? _recognizedText;
-  bool _isRecognizing = false;
+  int _isRecognizing = 0;
 
   Future<void> _pickImage(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
@@ -253,7 +253,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
   Future<void> _ocrText(BuildContext context) async {
     if (_pickedImage == null) return;
     setState(() {
-      _isRecognizing = true;
+      _isRecognizing = 1;
       _recognizedText = null;
     });
     final inputImage = InputImage.fromFilePath(_pickedImage!.path);
@@ -273,7 +273,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
       ).showSnackBar(const SnackBar(content: Text('Erreur lors de la reconnaissance du texte')));
     } finally {
       setState(() {
-        _isRecognizing = false;
+        _isRecognizing = 0;
       });
     }
   }
@@ -281,7 +281,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
   Future<void> _aiText(BuildContext context) async {
     if (_pickedImage == null) return;
     setState(() {
-      _isRecognizing = true;
+      _isRecognizing = 2;
       _recognizedText = null;
     });
     final inputImage = InputImage.fromFilePath(_pickedImage!.path);
@@ -301,7 +301,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
       ).showSnackBar(const SnackBar(content: Text('Erreur lors de la reconnaissance du texte')));
     } finally {
       setState(() {
-        _isRecognizing = false;
+        _isRecognizing = 0;
       });
     }
   }
@@ -309,7 +309,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
   Future<void> _aiOcrText(BuildContext context) async {
     if (_pickedImage == null) return;
     setState(() {
-      _isRecognizing = true;
+      _isRecognizing = 3;
       _recognizedText = null;
     });
     final inputImage = InputImage.fromFilePath(_pickedImage!.path);
@@ -329,7 +329,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
       ).showSnackBar(const SnackBar(content: Text('Erreur lors de la reconnaissance du texte')));
     } finally {
       setState(() {
-        _isRecognizing = false;
+        _isRecognizing = 0;
       });
     }
   }
@@ -368,38 +368,38 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
             ElevatedButton.icon(
               icon: const Icon(Icons.text_snippet),
               label:
-                  _isRecognizing
+                  _isRecognizing != 0
                       ? const SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                       : const Text('Reconnaître le texte par OCR'),
-              onPressed: _isRecognizing ? null : () => _ocrText(context),
+              onPressed: _isRecognizing != 0 ? null : () => _ocrText(context),
             ),
             ElevatedButton.icon(
               icon: const Icon(Icons.text_snippet),
               label:
-                  _isRecognizing
+                  _isRecognizing != 0
                       ? const SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                       : const Text('Reconnaître le texte par IA'),
-              onPressed: _isRecognizing ? null : () => _aiText(context),
+              onPressed: _isRecognizing != 0 ? null : () => _aiText(context),
             ),
             ElevatedButton.icon(
               icon: const Icon(Icons.text_snippet),
               label:
-                  _isRecognizing
+                  _isRecognizing != 0
                       ? const SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                       : const Text('Reconnaître le texte par IA et OCR'),
-              onPressed: _isRecognizing ? null : () => _aiOcrText(context),
+              onPressed: _isRecognizing != 0 ? null : () => _aiOcrText(context),
             ),
           ],
           if (_recognizedText != null) ...[

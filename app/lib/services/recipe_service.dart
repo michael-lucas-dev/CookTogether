@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:app/services/firestore_service.dart';
 import 'package:app/models/recipe.dart';
 import 'package:firebase_ai/firebase_ai.dart';
@@ -112,7 +114,7 @@ class RecipeService {
     String result;
     try {
       final RecognizedText recognizedText = await textRecognizer.processImage(image);
-      result = cleanOcrRecipe(recognizedText.text);
+      result = recognizedText.text;
     } catch (e) {
       AppLogger.error('Erreur lors de la reconnaissance du texte', e);
       throw 'Erreur lors de la reconnaissance du texte';
@@ -123,8 +125,11 @@ class RecipeService {
   }
 
   Future<String?> recognizeTextFromImageWithAI(InputImage image) async {
-    final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.0-flash');
-    final prompt = TextPart("""
+    try {
+      final file = File(image.filePath!);
+      final bytes = file.readAsBytesSync();
+      final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.0-flash');
+      final prompt = TextPart("""
     Analyse l'image et renvoie un JSON structuré avec les champs suivants :
     - titre
     - description (texte ou vide)
@@ -134,14 +139,20 @@ class RecipeService {
     - temps_cuisson (en minutes ou null)
     - ustensiles (liste ou vide)
   """);
-    final imagePart = InlineDataPart('image/jpeg', image.bytes!);
-    final response = await model.generateContent([
-      Content.multi([prompt, imagePart]),
-    ]);
-    return response.text;
+      final imagePart = InlineDataPart('image/jpeg', bytes);
+      final response = await model.generateContent([
+        Content.multi([prompt, imagePart]),
+      ]);
+      return response.text;
+    } catch (e) {
+      AppLogger.error('Erreur lors de la reconnaissance du texte', e);
+      throw 'Erreur lors de la reconnaissance du texte';
+    }
   }
 
   Future<String?> recognizeTextFromImageWithAIBoosted(InputImage image) async {
+    final file = File(image.filePath!);
+    final bytes = file.readAsBytesSync();
     final ocrText = await recognizeTextFromImage(image);
     final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.0-flash');
     final prompt = TextPart("""
@@ -156,7 +167,7 @@ class RecipeService {
     - temps_cuisson (en minutes ou null)
     - ustensiles (liste ou vide)
   """);
-    final imagePart = InlineDataPart('image/jpeg', image.bytes!);
+    final imagePart = InlineDataPart('image/jpeg', bytes);
     final response = await model.generateContent([
       Content.multi([prompt, imagePart]),
     ]);
@@ -183,16 +194,6 @@ class RecipeService {
     commonCorrections.forEach((pattern, replacement) {
       text = text.replaceAllMapped(RegExp(pattern, caseSensitive: false), (match) => replacement);
     });
-
-    // Normalisation des titres de section
-    text = text.replaceAllMapped(
-      RegExp(r'(?i)(ingr[eé]dients)[\s:\n]*'),
-      (m) => '\n\nIngrédients:\n',
-    );
-    text = text.replaceAllMapped(
-      RegExp(r'(?i)(pr[eé]paration|e?tapes?)[\s:\n]*'),
-      (m) => '\n\nPréparation:\n',
-    );
 
     // Forcer les listes d'ingrédients en puces
     text = text.replaceAllMapped(
