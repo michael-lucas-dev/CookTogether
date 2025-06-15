@@ -1,228 +1,66 @@
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-build/
-**/lib/firebase_options.dart
-
-# Android related
-**/android/**/gradle-wrapper.jar
-**/android/.gradle
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
-**/android/**/gradle/
-**/android/**/gradlew
-**/android/**/gradlew.bat
-**/android/**/local.properties
-**/android/**/**/gradle/
-**/android/**/**.apk
-**/android/**/**.ap_
-**/android/**/**.dex
-**/android/**/**.class
-**/android/**/**.bin
-**/android/**/**.pro
-**/android/**/**.properties
-**/android/**/**.scc
-**/android/**/**.keystore
-**/android/**/**.iml
-
-# iOS related
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*.xcodeproj/*
-!**/ios/**/xcshareddata/
-!**/ios/**/xcshareddata/*
-**/ios/**/*.xcworkspace/contents.xcworkspacedata
-**/ios/**/*.xcbkptree
-**/ios/**/*.xcuserstate
-**/ios/**/Pods/
-**/ios/**/Podfile.lock
-**/ios/**/Flutter/Flutter.framework
-**/ios/**/Flutter/Flutter.podspec
-**/ios/**/Flutter/App.framework
-**/ios/**/Flutter/Debug.xcconfig
-**/ios/**/Flutter/Release.xcconfig
-**/ios/**/Flutter/Profile.xcconfig
-**/ios/**/Flutter/Flutter-Debug.xcconfig
-**/ios/**/Flutter/Flutter-Profile.xcconfig
-**/ios/**/Flutter/Flutter-Release.xcconfig
-**/ios/**/Flutter/flutter_export_environment.sh
-**/ios/**/Flutter/app.flx
-**/ios/**/Flutter/app.dylib
-**/ios/**/Flutter/app.zip
-**/ios/**/Flutter/flutter_assets/
-**/ios/**/Flutter/flutter_export_environment.sh
-**/ios/**/Flutter/Flutter.podspec
-**/ios/**/Flutter/FlutterMacOS.framework
-**/ios/**/Flutter/FlutterMacOS.podspec
-**/ios/**/Flutter/FlutterPluginMacOS.h
-**/ios/**/Flutter/FlutterPluginMacOS.m
-**/ios/**/Flutter/FlutterPluginMacOS.podspec
-**/ios/**/Flutter/FlutterPluginRegistrant
-**/ios/**/Flutter/FlutterPluginRegistrant.podspec
-**/ios/**/Flutter/FlutterPlugin.h
-**/ios/**/Flutter/FlutterPlugin.m
-**/ios/**/Flutter/FlutterPlugin.podspec
-**/ios/**/Flutter/FlutterPluginRegistry.h
-**/ios/**/Flutter/FlutterPluginRegistry.m
-**/ios/**/Flutter/FlutterPluginTest.m
-**/ios/**/Flutter/FlutterPluginUtilities.h
-**/ios/**/Flutter/FlutterPluginUtilities.m
-**/ios/**/Flutter/FlutterPluginUtilities.podspec
-**/ios/**/Flutter/Flutter.podspec
-**/ios/**/Flutter/FlutterMacOS.framework
-**/ios/**/Flutter/FlutterMacOS.podspec
-
-# macOS
-**/macos/Flutter/Flutter.framework/
-**/macos/Flutter/Flutter.podspec
-**/macos/Flutter/FlutterMacOS.framework/
-**/macos/Flutter/FlutterMacOS.podspec
-**/macos/Flutter/GeneratedPluginRegistrant.swift
-**/macos/.symlinks/
-**/macos/Pods/
-**/macos/**/xcuserdata/
-**/macos/.generated/
-**/macos/Flutter/Flutter-Generated.xcconfig
-**/macos/Flutter/Flutter-Debug.xcconfig
-**/macos/Flutter/Flutter-Profile.xcconfig
-**/macos/Flutter/Flutter-Release.xcconfig
-
-# Web
-**/web/
-!**/web/index.html
-!**/web/favicon.png
-
-# Windows
-**/windows/flutter/
-**/windows/runner/
-**/windows/flutter/generated_plugin_registrant.cc
-**/windows/flutter/generated_plugins.cmake
-**/windows/flutter/generated_plugin_registrant.h
-**/windows/runner/runner.exe
-**/windows/runner/CMakeLists.txt
-**/windows/runner/Flutter/
-**/windows/runner/Runner.rc
-**/windows/runner/Runner.rc2
-**/windows/runner/Runner.manifest
-**/windows/runner/runner.aps
-**/windows/runner/runner.manifest
-**/windows/runner/runner_plugin_registrant.cc
-**/windows/runner/runner_plugin_registrant.h
-**/windows/runner/runner_plugin_registrant.cpp
-**/windows/runner/runner_plugin_registrant.rc
-**/windows/runner/runner_plugin_registrant.manifest
-**/windows/runner/runner_plugin_registrant.aps
-**/windows/runner/runner_plugin_registrant.manifest
-**/windows/runner/runner_plugin_registrant.rc2
-
-# Linux
-**/linux/flutter/
-**/linux/flutter/ephemeral/
-**/linux/flutter/generated_plugin_registrant.cc
-**/linux/flutter/generated_plugin_registrant.h
-**/linux/flutter/generated_plugins.cmake
-**/linux/runner/
-**/linux/runner/CMakeLists.txt
-**/linux/runner/runner
-**/linux/runner/runner_plugin_registrant.cc
-**/linux/runner/runner_plugin_registrant.h
-**/linux/runner/runner_plugin_registrant.cpp
-
-# IDE related
-*.swp
-*.swo
-*~
-*.iml
-*.ipr
-*.iws
-.DS_Store
-*.sublime-workspace
-*.sublime-project
-
-# Local development files
-.env
-.env.*
-!.env.example
-
-# Coverage
-coverage/
-
-# VS Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-
-# IntelliJ
-.idea/
-*.iml
-*.iws
-*.ipr
-*.ids
-*.orig.*
-
-# Miscellaneous
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.buildlog/
-.history
-.svn/
-
-# Packages
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-*.tgz
-
-# Build files
-build/
-**/build/
-
-# Fastlane
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots
-fastlane/test_output
-fastlane/readme.md
-
-# Flutter/Dart/Pub
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# Flutter & Dart
 **/.dart_tool/
-**/.flutter-plugins
-**/.flutter-plugins-dependencies
 **/.packages
 **/.pub-cache/
-**/.pub/
+**/*.flutter-plugins
+**/*.flutter-plugins-dependencies
+**/.melos_tool/
+**/build/
+**/generated_plugin_registrant.dart
+**/.dart_tool.js
 
-# Web related
-lib/generated_plugin_registrant.dart
+# IntelliJ / Android Studio
+**/*.iml
+**/*.ipr
+**/*.iws
+**/.idea/
 
-# Exceptions to the rule for the app directory
-!app/**/mocked_data/
-!app/**/test_helpers/
-!app/**/test/
+# VS Code
+/**/.vscode/
+**/.history/
 
-# Design system specific
-!design_system/test/
-!design_system/coverage/
+
+# Xcode
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/ephemeral/
+**/ios/Runner.xcworkspace/
+**/ios/build/
+**/*.xcworkspace
+**/*.xcuserstate
+**/*.xcuserdata
+
+# Android
+**/android/.gradle/
+**/android/.idea/
+**/android/local.properties
+**/android/build/
+**/*.keystore
+**/*.jks
+
+# Firebase secrets (à injecter via CI)
+**/google-services.json
+**/GoogleService-Info.plist
+**/firebase_options.dart
+
+# Other system files
+**/.DS_Store
+**/Thumbs.db
+
+# Logs
+**/*.log
+
+# Coverage & test
+**/coverage/
+**/.dart-coverage/
+
+# Env / dotenv
+**/*.env
+**/*.env.*
+**/*.envrc
+
+# GitHub Actions
+.github/workflows/*.log
+.github/workflows/*.cache

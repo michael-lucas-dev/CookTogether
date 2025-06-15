@@ -25,6 +25,11 @@ plugins {
     id("com.google.firebase.crashlytics") version("2.8.1") apply false
     // END: FlutterFire Configuration
     id("org.jetbrains.kotlin.android") version "2.1.0" apply false
+
+    id("com.google.mlkit:text-recognition-chinese") version "16.0.0"
+    id("com.google.mlkit:text-recognition-devanagari") version "16.0.0"
+    id("com.google.mlkit:text-recognition-japanese") version "16.0.0"
+    id("com.google.mlkit:text-recognition-korean") version "16.0.0"
 }
 
 include(":app")

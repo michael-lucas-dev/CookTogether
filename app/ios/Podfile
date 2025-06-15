@@ -41,3 +41,8 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
   end
 end
+
+pod 'GoogleMLKit/TextRecognitionChinese', '~> 7.0.0'
+pod 'GoogleMLKit/TextRecognitionDevanagari', '~> 7.0.0'
+pod 'GoogleMLKit/TextRecognitionJapanese', '~> 7.0.0'
+pod 'GoogleMLKit/TextRecognitionKorean', '~> 7.0.0'
