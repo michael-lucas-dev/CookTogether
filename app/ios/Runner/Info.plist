@@ -43,6 +43,16 @@
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Nous avons besoin d'accéder à votre galerie pour sélectionner des photos de recettes.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Nous avons besoin d'accéder à votre appareil photo pour prendre des photos de recettes.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>Nous avons besoin d'accéder à votre galerie pour sélectionner des photos de recettes.</string>
+
+<key>NSCameraUsageDescription</key>
+<string>Nous avons besoin d'accéder à votre appareil photo pour prendre des photos de recettes.</string>
+
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSLocalNetworkUsageDescription</key>

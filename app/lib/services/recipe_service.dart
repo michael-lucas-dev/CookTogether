@@ -143,7 +143,6 @@ class RecipeService {
 
   Future<String?> recognizeTextFromImageWithAIBoosted(InputImage image) async {
     final ocrText = await recognizeTextFromImage(image);
-    if (ocrText == null) return null;
     final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.0-flash');
     final prompt = TextPart("""
     Voici un texte OCR d'une recette de cuisine :$ocrText

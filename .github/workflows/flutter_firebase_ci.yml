@@ -97,4 +97,4 @@ jobs:
             --app ${{ secrets.FIREBASE_ANDROID_APP_ID }} \
             --token ${{ secrets.FIREBASE_TOKEN }} \
             --groups ${{ env.FIREBASE_TESTER_GROUPS }} \
-            --release-notes "📦 Build automatique ${{ github.sha }} depuis GitHub Actions"
+            --release-notes "📦 Build automatique ${{ steps.buildnumber.outputs.build_number }} depuis GitHub Actions"

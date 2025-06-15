@@ -34,15 +34,17 @@ target 'Runner' do
   target 'RunnerTests' do
     inherit! :search_paths
   end
+  pod 'GoogleMLKit/TextRecognitionChinese', '~> 7.0.0'
+  pod 'GoogleMLKit/TextRecognitionDevanagari', '~> 7.0.0'
+  pod 'GoogleMLKit/TextRecognitionJapanese', '~> 7.0.0'
+  pod 'GoogleMLKit/TextRecognitionKorean', '~> 7.0.0'
 end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |config|
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+    end
     flutter_additional_ios_build_settings(target)
   end
 end
-
-pod 'GoogleMLKit/TextRecognitionChinese', '~> 7.0.0'
-pod 'GoogleMLKit/TextRecognitionDevanagari', '~> 7.0.0'
-pod 'GoogleMLKit/TextRecognitionJapanese', '~> 7.0.0'
-pod 'GoogleMLKit/TextRecognitionKorean', '~> 7.0.0'

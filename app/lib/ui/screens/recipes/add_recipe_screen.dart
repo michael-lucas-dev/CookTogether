@@ -240,6 +240,7 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
           ),
     );
     if (source != null) {
+      debugPrint('Source: $source');
       final XFile? image = await picker.pickImage(source: source, maxWidth: 1200, maxHeight: 1200);
       if (image != null) {
         setState(() {
