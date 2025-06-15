@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/services/firestore_service.dart';
@@ -109,21 +110,6 @@ class RecipeService {
         );
   }
 
-  Future<String> recognizeTextFromImage(InputImage image) async {
-    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-    String result;
-    try {
-      final RecognizedText recognizedText = await textRecognizer.processImage(image);
-      result = recognizedText.text;
-    } catch (e) {
-      AppLogger.error('Erreur lors de la reconnaissance du texte', e);
-      throw 'Erreur lors de la reconnaissance du texte';
-    } finally {
-      textRecognizer.close();
-    }
-    return result;
-  }
-
   Future<String?> recognizeTextFromImageWithAI(InputImage image) async {
     try {
       final file = File(image.filePath!);
@@ -150,15 +136,18 @@ class RecipeService {
     }
   }
 
-  Future<String?> recognizeTextFromImageWithAIBoosted(InputImage image) async {
-    final file = File(image.filePath!);
-    final bytes = file.readAsBytesSync();
-    final ocrText = await recognizeTextFromImage(image);
-    final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.0-flash');
-    final prompt = TextPart("""
-    Voici un texte OCR d'une recette de cuisine :$ocrText
+  Future<Recipe> recognizeRecipeFromImage(InputImage image, {required String authorId}) async {
+    try {
+      if (image.filePath == null || image.bytes == null) {
+        throw 'Image non valide';
+      }
 
-    Analyse le texte ainsi que l'image et renvoie un JSON structuré avec les champs suivants :
+      final file = File(image.filePath!);
+      final bytes = file.readAsBytesSync();
+
+      final model = FirebaseAI.googleAI().generativeModel(model: 'gemini-2.0-flash');
+      final prompt = TextPart("""
+    Analyse l'image et renvoie un JSON structuré avec les champs suivants :
     - titre
     - description (texte ou vide)
     - ingredients (liste)
@@ -166,44 +155,35 @@ class RecipeService {
     - temps_preparation (en minutes ou null)
     - temps_cuisson (en minutes ou null)
     - ustensiles (liste ou vide)
-  """);
-    final imagePart = InlineDataPart('image/jpeg', bytes);
-    final response = await model.generateContent([
-      Content.multi([prompt, imagePart]),
-    ]);
-    return response.text;
-  }
+    """);
+      final imagePart = InlineDataPart('image/jpeg', bytes);
+      final response = await model.generateContent([
+        Content.multi([prompt, imagePart]),
+      ]);
+      final Map<String, dynamic> data = jsonDecode(response.text!);
 
-  String cleanOcrRecipe(String rawText) {
-    String text = rawText;
-
-    // Erreurs courantes OCR à corriger
-    final Map<String, String> commonCorrections = {
-      r'\bOeufs?\b': 'œufs',
-      r'\b1\b(?=\s+cuill[eé]re)': '1', // l mal reconnu en 1
-      r'\blait\b': 'lait', // parfois "Iait"
-      r'\blarlne\b': 'farine',
-      r'\bfaclles\b': 'faciles',
-      r'\bmetter?\b': 'mettre',
-      r'\bsaladler\b': 'saladier',
-      r'(?<=\d)\s*ml': 'ml',
-      r'(?<=\d)\s*g': 'g',
-      r'\s{2,}': ' ', // Supprimer les espaces multiples
-    };
-
-    commonCorrections.forEach((pattern, replacement) {
-      text = text.replaceAllMapped(RegExp(pattern, caseSensitive: false), (match) => replacement);
-    });
-
-    // Forcer les listes d'ingrédients en puces
-    text = text.replaceAllMapped(
-      RegExp(r'(?<=Ingrédients:\n)([^•\n-].+)', multiLine: true),
-      (m) => '- ${m.group(1)}',
-    );
-
-    // Nettoyage de début/fin
-    text = text.trim();
-
-    return text;
+      return Recipe(
+        id: '',
+        title: data['titre'] ?? '',
+        description: data['description'],
+        ingredients:
+            (data['ingredients'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+        steps: (data['etapes'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+        preparationTime:
+            data['temps_preparation'] is int
+                ? data['temps_preparation']
+                : int.tryParse(data['temps_preparation']?.toString() ?? '') ?? 0,
+        cookingTime:
+            data['temps_cuisson'] is int
+                ? data['temps_cuisson']
+                : int.tryParse(data['temps_cuisson']?.toString() ?? '') ?? 0,
+        authorId: authorId,
+        createdAt: DateTime.now(),
+        utensils: (data['ustensiles'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      );
+    } catch (e) {
+      AppLogger.error('Erreur lors de la reconnaissance du texte', e);
+      rethrow;
+    }
   }
 }

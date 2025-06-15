@@ -250,34 +250,6 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
     }
   }
 
-  Future<void> _ocrText(BuildContext context) async {
-    if (_pickedImage == null) return;
-    setState(() {
-      _isRecognizing = 1;
-      _recognizedText = null;
-    });
-    final inputImage = InputImage.fromFilePath(_pickedImage!.path);
-    try {
-      final String ocrText = await ref
-          .read(recipeServiceProvider)
-          .recognizeTextFromImage(inputImage);
-      setState(() {
-        _recognizedText = ocrText;
-      });
-    } catch (e) {
-      setState(() {
-        _recognizedText = 'Erreur lors de la reconnaissance du texte';
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Erreur lors de la reconnaissance du texte')));
-    } finally {
-      setState(() {
-        _isRecognizing = 0;
-      });
-    }
-  }
-
   Future<void> _aiText(BuildContext context) async {
     if (_pickedImage == null) return;
     setState(() {
@@ -289,34 +261,6 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
       final String? result = await ref
           .read(recipeServiceProvider)
           .recognizeTextFromImageWithAI(inputImage);
-      setState(() {
-        _recognizedText = result;
-      });
-    } catch (e) {
-      setState(() {
-        _recognizedText = 'Erreur lors de la reconnaissance du texte';
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Erreur lors de la reconnaissance du texte')));
-    } finally {
-      setState(() {
-        _isRecognizing = 0;
-      });
-    }
-  }
-
-  Future<void> _aiOcrText(BuildContext context) async {
-    if (_pickedImage == null) return;
-    setState(() {
-      _isRecognizing = 3;
-      _recognizedText = null;
-    });
-    final inputImage = InputImage.fromFilePath(_pickedImage!.path);
-    try {
-      final String? result = await ref
-          .read(recipeServiceProvider)
-          .recognizeTextFromImageWithAIBoosted(inputImage);
       setState(() {
         _recognizedText = result;
       });
@@ -374,32 +318,8 @@ class _AddRecipeScreenState extends ConsumerState<AddRecipeScreen>
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                      : const Text('Reconnaître le texte par OCR'),
-              onPressed: _isRecognizing != 0 ? null : () => _ocrText(context),
-            ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.text_snippet),
-              label:
-                  _isRecognizing != 0
-                      ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : const Text('Reconnaître le texte par IA'),
+                      : const Text('Analyser l\'image'),
               onPressed: _isRecognizing != 0 ? null : () => _aiText(context),
-            ),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.text_snippet),
-              label:
-                  _isRecognizing != 0
-                      ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                      : const Text('Reconnaître le texte par IA et OCR'),
-              onPressed: _isRecognizing != 0 ? null : () => _aiOcrText(context),
             ),
           ],
           if (_recognizedText != null) ...[
