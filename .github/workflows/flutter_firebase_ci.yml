@@ -77,8 +77,8 @@ jobs:
             --project=${{ secrets.FIREBASE_PROJECT_ID }} \
             --out=lib/firebase_options.dart \
             --android-package-name=${{ secrets.ANDROID_PACKAGE_NAME }} \
-            --platforms=${{ secrets.PLATFORMS || 'android' }}
-            --yes
+            --platforms=${PLATFORMS:-android} \
+            --overwrite-firebase-options
 
       ####################################################################
       # 7. Compiler l'app Android (APK)
