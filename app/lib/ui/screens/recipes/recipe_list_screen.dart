@@ -6,11 +6,6 @@ import 'package:app/ui/widgets/recipe_card.dart';
 import 'package:app/ui/widgets/recipe_search_bar.dart';
 import 'package:app/ui/widgets/recipe_filter_chips.dart';
 import 'package:flutter/material.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:app/services/recipe_service.dart';
-import 'package:app/providers/auth_providers.dart';
-import 'package:app/providers/recipe_service_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

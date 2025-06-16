@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:app/ui/templates/base_page.dart';
-import 'package:app/ui/templates/main_screen_template.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:google_mlkit_commons/google_mlkit_commons.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:app/models/recipe.dart';
 import 'package:app/providers/auth_providers.dart';
 import 'package:app/providers/recipe_service_provider.dart';
