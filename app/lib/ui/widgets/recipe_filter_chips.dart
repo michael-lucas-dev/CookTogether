@@ -26,7 +26,7 @@ class RecipeFilterChips extends StatelessWidget {
             label: Text(filters[index]),
             selected: selected,
             onSelected: (_) => onSelected(index),
-            selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+            selectedColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
             backgroundColor: Colors.grey[100],
             labelStyle: TextStyle(
               color: selected ? Theme.of(context).colorScheme.primary : Colors.black87,

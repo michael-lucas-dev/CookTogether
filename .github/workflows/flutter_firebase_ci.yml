@@ -86,7 +86,7 @@ jobs:
       # 7. Compiler l'app Android (APK)
       ####################################################################
       - name: Build Android APK
-        run: flutter build apk --release
+        run: flutter build apk --release --build-number ${{ steps.buildnumber.outputs.build_number }}
         working-directory: app
 
       ####################################################################
