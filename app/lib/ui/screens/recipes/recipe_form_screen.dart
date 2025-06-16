@@ -31,6 +31,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
   late TabController _tabController;
 
   XFile? _pickedImage;
+  XFile? _pickedImageForAI;
   bool _isRecognizing = false;
 
   @override
@@ -63,7 +64,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
     super.dispose();
   }
 
-  Future<void> _pickImage(BuildContext context) async {
+  Future<void> _pickImage(BuildContext context, {bool forAI = false}) async {
     final picker = ImagePicker();
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
@@ -90,7 +91,11 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
       final XFile? image = await picker.pickImage(source: source, maxWidth: 1200, maxHeight: 1200);
       if (image != null) {
         setState(() {
-          _pickedImage = image;
+          if (forAI) {
+            _pickedImageForAI = image;
+          } else {
+            _pickedImage = image;
+          }
         });
       }
     }
@@ -134,7 +139,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
   }
 
   Future<void> _analyzeImageWithAI(BuildContext context) async {
-    if (_pickedImage == null) {
+    if (_pickedImageForAI == null) {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -146,7 +151,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
     try {
       final user = ref.read(authStateProvider).value;
       if (user == null) return;
-      final inputImage = InputImage.fromFilePath(_pickedImage!.path);
+      final inputImage = InputImage.fromFilePath(_pickedImageForAI!.path);
       final recipe = await ref
           .read(recipeServiceProvider)
           .recognizeRecipeFromImage(inputImage, authorId: user.uid);
@@ -254,9 +259,6 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
-              validator:
-                  (value) =>
-                      value == null || value.isEmpty ? 'Veuillez entrer une description' : null,
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -329,11 +331,11 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (_pickedImage != null)
+          if (_pickedImageForAI != null)
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.file(
-                File(_pickedImage!.path),
+                File(_pickedImageForAI!.path),
                 width: 200,
                 height: 200,
                 fit: BoxFit.cover,
@@ -350,10 +352,10 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
           const SizedBox(height: 24),
           ElevatedButton.icon(
             icon: const Icon(Icons.camera_alt),
-            label: Text(_pickedImage == null ? 'Choisir une image' : 'Changer l\'image'),
-            onPressed: () => _pickImage(context),
+            label: Text(_pickedImageForAI == null ? 'Choisir une image' : 'Changer l\'image'),
+            onPressed: () => _pickImage(context, forAI: true),
           ),
-          if (_pickedImage != null) ...[
+          if (_pickedImageForAI != null) ...[
             const SizedBox(height: 16),
             ElevatedButton.icon(
               icon: const Icon(Icons.text_snippet),

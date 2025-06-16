@@ -148,7 +148,7 @@ class RecipeService {
 
   Future<Recipe> recognizeRecipeFromImage(InputImage image, {required String authorId}) async {
     try {
-      if (image.filePath == null || image.bytes == null) {
+      if (image.filePath == null) {
         throw 'Image non valide';
       }
 
@@ -170,7 +170,17 @@ class RecipeService {
       final response = await model.generateContent([
         Content.multi([prompt, imagePart]),
       ]);
-      final Map<String, dynamic> data = jsonDecode(response.text!);
+      debugPrint(response.text);
+      if (response.text == null) {
+        throw 'Erreur lors de la reconnaissance du texte';
+      }
+      String responseCleaned =
+          response.text!
+              .replaceFirst(RegExp(r'^```json\s*'), '') // Supprime le début ```json
+              .replaceFirst(RegExp(r'\s*```$'), '') // Supprime la fin ```
+              .trim();
+
+      final Map<String, dynamic> data = jsonDecode(responseCleaned);
 
       return Recipe(
         id: '',
