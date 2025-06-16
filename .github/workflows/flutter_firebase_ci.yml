@@ -39,6 +39,7 @@ jobs:
       # 3. Générer le numéro de build
       ####################################################################
       - name: Generate build number
+        id: buildnumber
         uses: onyxmueller/build-tag-number@v1
         with:
           token: ${{secrets.github_token}}
@@ -79,6 +80,7 @@ jobs:
             --android-package-name=${{ secrets.ANDROID_PACKAGE_NAME }} \
             --platforms=${PLATFORMS:-android} \
             --overwrite-firebase-options
+            --build-number=${{ steps.buildnumber.outputs.build_number }}
 
       ####################################################################
       # 7. Compiler l'app Android (APK)
