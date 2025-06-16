@@ -56,4 +56,32 @@ class Recipe {
       utensils: List<String>.from(map['utensils'] as List<dynamic>? ?? []),
     );
   }
+
+  Recipe copyWith({
+    String? id,
+    String? imageUrl,
+    String? title,
+    String? description,
+    List<String>? ingredients,
+    List<String>? steps,
+    int? preparationTime,
+    int? cookingTime,
+    String? authorId,
+    DateTime? createdAt,
+    List<String>? utensils,
+  }) {
+    return Recipe(
+      id: id ?? this.id,
+      imageUrl: imageUrl ?? this.imageUrl,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      ingredients: ingredients ?? this.ingredients,
+      steps: steps ?? this.steps,
+      preparationTime: preparationTime ?? this.preparationTime,
+      cookingTime: cookingTime ?? this.cookingTime,
+      authorId: authorId ?? this.authorId,
+      createdAt: createdAt ?? this.createdAt,
+      utensils: utensils ?? this.utensils,
+    );
+  }
 }

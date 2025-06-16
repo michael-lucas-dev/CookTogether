@@ -1,14 +1,14 @@
 import 'package:app/core/logger.dart';
 import 'package:app/providers/router_providers.dart';
-import 'package:app/ui/screens/recipes/edit_recipe_screen.dart';
-import 'package:app/ui/widgets/main_navigation.dart';
 import 'package:app/ui/screens/auth/login_screen.dart';
 import 'package:app/ui/screens/auth/register_screen.dart';
 import 'package:app/ui/screens/auth/welcome_screen.dart';
 import 'package:app/ui/screens/community/community_screen.dart';
 import 'package:app/ui/screens/planning/planning_screen.dart';
-import 'package:app/ui/screens/recipes/add_recipe_screen.dart';
+import 'package:app/ui/screens/recipes/recipe_form_screen.dart';
+import 'package:app/models/recipe.dart';
 import 'package:app/ui/screens/recipes/recipe_detail_screen.dart';
+import 'package:app/ui/widgets/main_navigation.dart';
 import 'package:app/ui/screens/recipes/recipe_list_screen.dart';
 import 'package:app/ui/screens/shopping/shopping_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -64,7 +64,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: Locations.welcome, builder: (context, state) => const WelcomeScreen()),
       GoRoute(path: Locations.login, builder: (context, state) => const LoginScreen()),
       GoRoute(path: Locations.register, builder: (context, state) => const RegisterScreen()),
-      GoRoute(path: Locations.addRecipe, builder: (context, state) => const AddRecipeScreen()),
+      GoRoute(path: Locations.addRecipe, builder: (context, state) => const RecipeFormScreen()),
       GoRoute(
         path: "${Locations.recipeDetail}/:recipeId",
         builder: (context, state) {
@@ -73,10 +73,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: "${Locations.editRecipe}/:recipeId",
+        path: Locations.editRecipe,
         builder: (context, state) {
-          final recipeId = state.pathParameters['recipeId']!;
-          return EditRecipeScreen(recipeId: recipeId);
+          final recipe = state.extra as Recipe?;
+          return RecipeFormScreen(recipe: recipe);
         },
       ),
     ],

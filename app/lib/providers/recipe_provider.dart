@@ -42,7 +42,7 @@ class RecipeProvider with ChangeNotifier {
   }
 
   // Ajouter une nouvelle recette
-  Future<void> addRecipe(Recipe recipe) async {
+  /*Future<void> addRecipe(Recipe recipe) async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -57,10 +57,10 @@ class RecipeProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }
+  }*/
 
   // Mettre à jour une recette existante
-  Future<void> updateRecipe(Recipe recipe) async {
+  /*Future<void> updateRecipe(Recipe recipe) async {
     try {
       _isLoading = true;
       notifyListeners();
@@ -75,7 +75,7 @@ class RecipeProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }
+  }*/
 
   // Supprimer une recette
   Future<void> deleteRecipe(String recipeId) async {

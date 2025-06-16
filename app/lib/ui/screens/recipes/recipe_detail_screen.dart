@@ -1,3 +1,4 @@
+import 'package:app/providers/auth_providers.dart';
 import 'package:app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,6 +46,37 @@ class RecipeDetailScreen extends ConsumerWidget {
                   // TODO: Implement favorite functionality
                 },
               ),
+              if (recipe.authorId == ref.watch(authStateProvider).value!.uid)
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () async {
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder:
+                          (ctx) => AlertDialog(
+                            title: const Text('Supprimer la recette'),
+                            content: const Text('Voulez-vous vraiment supprimer cette recette ?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: const Text('Annuler'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () => Navigator.pop(ctx, true),
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                child: const Text('Supprimer'),
+                              ),
+                            ],
+                          ),
+                    );
+                    if (confirm == true) {
+                      await ref.read(recipeServiceProvider).deleteRecipe(recipe.id);
+                      if (context.mounted) {
+                        context.pop();
+                      }
+                    }
+                  },
+                ),
             ],
           ),
           body: SingleChildScrollView(
@@ -56,9 +88,7 @@ class RecipeDetailScreen extends ConsumerWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.0),
                   child: Image.network(
-                    recipe.imageUrl.isNotEmpty
-                        ? recipe.imageUrl
-                        : 'https://via.placeholder.com/400x200?text=No+Image',
+                    recipe.imageUrl ?? 'https://via.placeholder.com/400x200?text=No+Image',
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
@@ -85,7 +115,7 @@ class RecipeDetailScreen extends ConsumerWidget {
                 // Description
                 Text('Description', style: Theme.of(context).textTheme.titleLarge),
                 const SizedBox(height: 8.0),
-                Text(recipe.description),
+                Text(recipe.description ?? ''),
                 const SizedBox(height: 24.0),
 
                 // Ingrédients
@@ -129,12 +159,15 @@ class RecipeDetailScreen extends ConsumerWidget {
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              context.push("${Locations.editRecipe}/${recipe.id}");
-            },
-            child: const Icon(Icons.edit),
-          ),
+          floatingActionButton:
+              recipe.authorId == ref.watch(authStateProvider).value!.uid
+                  ? FloatingActionButton(
+                    onPressed: () {
+                      context.push(Locations.editRecipe, extra: recipe);
+                    },
+                    child: const Icon(Icons.edit),
+                  )
+                  : null,
         );
       },
     );

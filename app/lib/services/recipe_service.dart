@@ -2,51 +2,61 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app/services/firestore_service.dart';
+import 'package:app/services/storage_service.dart';
 import 'package:app/models/recipe.dart';
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import '../core/logger.dart';
 
 class RecipeService {
   final FirestoreService _firestoreService;
+  final StorageService _storageService;
 
-  RecipeService(this._firestoreService);
+  RecipeService(this._firestoreService, this._storageService);
 
-  // Ajouter une nouvelle recette
-  Future<Recipe> addRecipe(Recipe recipe) async {
+  /// Ajouter une nouvelle recette avec gestion de l'upload d'image
+  Future<Recipe> addRecipe({required Recipe recipe, File? imageFile}) async {
     try {
       AppLogger.info('Ajout d\'une nouvelle recette');
       final docRef = await _firestoreService.addDocument('recipes', recipe.toMap());
-
-      // Mettre à jour l'ID de la recette avec l'ID Firestore
-      final updatedRecipe = Recipe(
-        id: docRef.id,
-        title: recipe.title,
-        description: recipe.description,
-        imageUrl: recipe.imageUrl,
-        ingredients: recipe.ingredients,
-        steps: recipe.steps,
-        preparationTime: recipe.preparationTime,
-        cookingTime: recipe.cookingTime,
-        authorId: recipe.authorId,
-        createdAt: recipe.createdAt,
-      );
-
-      // Mettre à jour le document avec l'ID
+      var updatedRecipe = recipe.copyWith(id: docRef.id);
+      if (imageFile != null) {
+        final imageUrl = await uploadImage(imageFile: imageFile, recipeId: docRef.id);
+        updatedRecipe = updatedRecipe.copyWith(imageUrl: imageUrl);
+      }
       await _firestoreService.updateDocument('recipes/${docRef.id}', updatedRecipe.toMap());
-
       AppLogger.info('Recette ajoutée avec succès');
       return updatedRecipe;
     } catch (e, stackTrace) {
-      AppLogger.error('Erreur lors de l\'ajout de la recette', e, stackTrace);
+      AppLogger.error("Erreur lors de l'ajout de la recette avec image", e, stackTrace);
+      rethrow;
+    }
+  }
+
+  /// Upload de l'image
+  Future<String> uploadImage({required File imageFile, required String recipeId}) async {
+    try {
+      AppLogger.info('Upload de l\'image');
+      final fileName = 'recipes/${recipeId}_${DateTime.now().millisecondsSinceEpoch}}';
+      final imageUrl = await _storageService.uploadFile(file: imageFile, path: fileName);
+      AppLogger.info('Image uploadée avec succès');
+      return imageUrl;
+    } catch (e, stackTrace) {
+      AppLogger.error('Erreur lors de l\'upload de l\'image', e, stackTrace);
       rethrow;
     }
   }
 
   // Mettre à jour une recette existante
-  Future<void> updateRecipe(Recipe recipe) async {
+  Future<void> updateRecipe(Recipe recipe, File? imageFile) async {
     try {
       AppLogger.info('Mise à jour de la recette ${recipe.id}');
+      if (imageFile != null) {
+        final imageUrl = await uploadImage(imageFile: imageFile, recipeId: recipe.id);
+        recipe = recipe.copyWith(imageUrl: imageUrl);
+        debugPrint('Image uploadée avec succès, $imageUrl -> ${recipe.imageUrl}');
+      }
       await _firestoreService.updateDocument('recipes/${recipe.id}', recipe.toMap());
       AppLogger.info('Recette mise à jour avec succès');
     } catch (e, stackTrace) {

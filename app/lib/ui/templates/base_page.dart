@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class BasePage extends ConsumerWidget {
   final String title;
+  final PreferredSizeWidget? appBarBottom;
   final Widget body;
   final List<Widget>? actions;
   final Widget? leading;
@@ -17,6 +18,7 @@ class BasePage extends ConsumerWidget {
     super.key,
     required this.title,
     required this.body,
+    this.appBarBottom,
     this.actions,
     this.leading,
     this.showBottomNav = false,
@@ -33,6 +35,7 @@ class BasePage extends ConsumerWidget {
                 ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop())
                 : null),
         title: Text(title),
+        bottom: appBarBottom,
         actions: [
           ...?actions,
           IconButton(
@@ -55,6 +58,26 @@ class BasePage extends ConsumerWidget {
       body: body,
       bottomNavigationBar: showBottomNav ? const MainNavigationBottomBar() : null,
       floatingActionButton: floatingActionButton,
+    );
+  }
+
+  BasePage copyWith({
+    String? title,
+    Widget? body,
+    PreferredSizeWidget? appBarBottom,
+    List<Widget>? actions,
+    Widget? leading,
+    bool? showBottomNav,
+    Widget? floatingActionButton,
+  }) {
+    return BasePage(
+      title: title ?? this.title,
+      body: body ?? this.body,
+      appBarBottom: appBarBottom ?? this.appBarBottom,
+      actions: actions ?? this.actions,
+      leading: leading ?? this.leading,
+      showBottomNav: showBottomNav ?? this.showBottomNav,
+      floatingActionButton: floatingActionButton ?? this.floatingActionButton,
     );
   }
 }

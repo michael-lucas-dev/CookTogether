@@ -30,7 +30,8 @@ class RouterNotifier extends ChangeNotifier {
 
   RouterNotifier(this._ref) {
     // Écoute les changements d'état d'authentification
-    _ref.listen(authStateProvider, (_, __) {
+    _ref.listen(authStateProvider, (previous, current) {
+      debugPrint('Auth state changed: $previous -> $current');
       notifyListeners();
     });
   }
@@ -41,8 +42,9 @@ class RouterNotifier extends ChangeNotifier {
 
     return authState.when(
       data: (user) async {
+        debugPrint('Auth state check: $user');
         // Pour la première arrivée sur l'app
-        if (state.uri.toString() == '/') {
+        if (state.uri.toString() == Locations.welcome) {
           if (user == null) {
             AppLogger.info('Redirection vers /login car utilisateur non connecté');
             return Locations.login;
@@ -69,7 +71,10 @@ class RouterNotifier extends ChangeNotifier {
 
         return null;
       },
-      loading: () => null,
+      loading: () {
+        debugPrint('Auth state loading');
+        return null;
+      },
       error: (error, stackTrace) {
         AppLogger.error('Erreur lors de la redirection', error, stackTrace);
         return Locations.login;

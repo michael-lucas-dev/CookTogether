@@ -6,6 +6,7 @@ class MainScreenTemplate extends StatelessWidget {
   final Widget body;
   final List<Widget>? actions;
   final Widget? floatingActionButton;
+  final PreferredSizeWidget? appBarBottom;
 
   const MainScreenTemplate({
     super.key,
@@ -13,12 +14,14 @@ class MainScreenTemplate extends StatelessWidget {
     required this.body,
     this.actions,
     this.floatingActionButton,
+    this.appBarBottom,
   });
 
   @override
   Widget build(BuildContext context) {
     return BasePage(
       title: title,
+      appBarBottom: appBarBottom,
       body: body,
       actions: actions,
       floatingActionButton: floatingActionButton,
