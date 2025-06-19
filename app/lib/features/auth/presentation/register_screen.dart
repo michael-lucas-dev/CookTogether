@@ -1,5 +1,5 @@
-import 'package:app/providers/firebase_providers.dart';
-import 'package:app/router/app_router.dart';
+import 'package:app/features/auth/providers/auth_provider.dart';
+import 'package:app/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app/core/logger.dart';
@@ -34,16 +34,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       setState(() => _isLoading = true);
       try {
         AppLogger.info('Tentative d\'inscription avec email: ${_emailController.text}');
-        final authService = ref.read(authServiceProvider);
-        await authService.createUserWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
+        await ref
+            .read(authNotifierProvider.notifier)
+            .createUserWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text.trim(),
+              displayName: _displayNameController.text.trim(),
+            );
 
-        final userModel = await authService.updateProfile(displayName: _displayNameController.text);
-
-        AppLogger.info('Création du profil utilisateur dans Firestore');
-        await ref.read(firestoreServiceProvider).createUserInFirestore(userModel);
         AppLogger.info('Inscription réussie');
 
         if (mounted) {

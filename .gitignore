@@ -8,6 +8,7 @@
 **/build/
 **/generated_plugin_registrant.dart
 **/.dart_tool.js
+**/*.g.dart
 
 # IntelliJ / Android Studio
 **/*.iml

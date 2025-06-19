@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app/services/firestore_service.dart';
-import 'package:app/services/storage_service.dart';
-import 'package:app/models/recipe.dart';
+import 'package:app/core/services/firestore_service.dart';
+import 'package:app/core/services/storage_service.dart';
+import 'package:app/features/recipes/domain/recipe.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import '../core/logger.dart';
+import '../../../core/logger.dart';
 
 class RecipeService {
   final FirestoreService _firestoreService;
@@ -38,7 +38,7 @@ class RecipeService {
   Future<String> uploadImage({required File imageFile, required String recipeId}) async {
     try {
       AppLogger.info('Upload de l\'image');
-      final fileName = 'recipes/${recipeId}_${DateTime.now().millisecondsSinceEpoch}}';
+      final fileName = 'recipes/${recipeId}_${DateTime.now().millisecondsSinceEpoch}';
       final imageUrl = await _storageService.uploadFile(file: imageFile, path: fileName);
       AppLogger.info('Image uploadée avec succès');
       return imageUrl;

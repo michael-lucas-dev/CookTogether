@@ -1,5 +1,5 @@
-import 'package:app/providers/firebase_providers.dart';
-import 'package:app/router/app_router.dart';
+import 'package:app/features/auth/providers/auth_provider.dart';
+import 'package:app/core/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app/core/logger.dart';
@@ -30,11 +30,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       setState(() => _isLoading = true);
       try {
         AppLogger.info('Tentative de connexion avec email: ${_emailController.text}');
-        final authService = ref.read(authServiceProvider);
-        await authService.signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
+        await ref
+            .read(authNotifierProvider.notifier)
+            .signInWithEmailAndPassword(
+              email: _emailController.text,
+              password: _passwordController.text,
+            );
         AppLogger.info('Connexion réussie');
         if (mounted) {
           context.go(Locations.recipes);
@@ -110,8 +111,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   AppLogger.info(
                     'Tentative de réinitialisation de mot de passe pour: ${_emailController.text}',
                   );
-                  final authService = ref.read(authServiceProvider);
-                  authService.sendPasswordResetEmail(_emailController.text);
+                  ref
+                      .read(authNotifierProvider.notifier)
+                      .sendPasswordResetEmail(_emailController.text);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Un email de réinitialisation a été envoyé')),
                   );

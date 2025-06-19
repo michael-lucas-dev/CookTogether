@@ -1,5 +1,5 @@
-import 'package:app/models/user_model.dart';
-import 'package:app/router/app_router.dart';
+import 'package:app/sort/user_model.dart';
+import 'package:app/core/router/app_router.dart';
 import 'package:flutter/foundation.dart';
 
 class RedirectionService {

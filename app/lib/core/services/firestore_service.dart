@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:app/models/user_model.dart';
-import '../core/logger.dart';
+import 'package:app/sort/user_model.dart';
+import '../logger.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore;

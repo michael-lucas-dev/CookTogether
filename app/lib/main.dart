@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:app/router/app_router.dart';
+import 'package:app/core/router/app_router.dart';
 import 'package:design_system/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';

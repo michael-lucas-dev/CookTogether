@@ -1,7 +1,7 @@
-import 'package:app/services/storage_service.dart';
+import 'package:app/core/services/storage_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:app/services/auth_service.dart';
-import 'package:app/services/firestore_service.dart';
+import 'package:app/sort/auth_service.dart';
+import 'package:app/core/services/firestore_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,5 +15,5 @@ final firestoreServiceProvider = Provider<FirestoreService>((ref) {
 });
 
 final storageServiceProvider = Provider<StorageService>((ref) {
-    return StorageService(FirebaseStorage.instance);
+  return StorageService(FirebaseStorage.instance, FirebaseAuth.instance);
 });

@@ -1,5 +1,5 @@
 import 'package:app/core/logger.dart';
-import 'package:app/providers/firebase_providers.dart';
+import 'package:app/sort/firebase_providers.dart';
 import 'package:app/ui/widgets/main_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

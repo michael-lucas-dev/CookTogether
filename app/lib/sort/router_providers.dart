@@ -1,8 +1,8 @@
 // Créons un Provider pour la logique de redirection
 import 'package:app/core/logger.dart';
-import 'package:app/providers/auth_providers.dart';
-import 'package:app/router/app_router.dart';
-import 'package:app/services/redirection_service.dart';
+import 'package:app/features/auth/providers/auth_provider.dart';
+import 'package:app/core/router/app_router.dart';
+import 'package:app/core/services/redirection_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';

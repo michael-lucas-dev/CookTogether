@@ -5,9 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:app/models/recipe.dart';
-import 'package:app/providers/auth_providers.dart';
-import 'package:app/providers/recipe_service_provider.dart';
+import 'package:app/features/recipes/domain/recipe.dart';
+import 'package:app/features/auth/providers/auth_provider.dart';
+import 'package:app/features/recipes/providers/recipe_service_provider.dart';
 
 /// Unifie l'ajout et l'édition de recette, et supporte la création par IA.
 class RecipeFormScreen extends ConsumerStatefulWidget {
@@ -295,8 +295,9 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen>
               ),
               keyboardType: TextInputType.number,
               validator: (value) {
-                if (value == null || value.isEmpty)
+                if (value == null || value.isEmpty) {
                   return 'Veuillez entrer le temps de préparation';
+                }
                 if (int.tryParse(value) == null) return 'Veuillez entrer un nombre valide';
                 return null;
               },

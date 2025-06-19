@@ -1,6 +1,6 @@
-import 'package:app/models/recipe.dart';
-import 'package:app/providers/recipe_service_provider.dart';
-import 'package:app/router/app_router.dart';
+import 'package:app/features/recipes/domain/recipe.dart';
+import 'package:app/features/recipes/providers/recipe_service_provider.dart';
+import 'package:app/core/router/app_router.dart';
 import 'package:app/ui/templates/main_screen_template.dart';
 import 'package:app/ui/widgets/recipe_card.dart';
 import 'package:app/ui/widgets/recipe_search_bar.dart';

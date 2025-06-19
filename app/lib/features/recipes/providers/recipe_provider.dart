@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:app/models/recipe.dart';
-import 'package:app/services/recipe_service.dart';
+import 'package:app/features/recipes/domain/recipe.dart';
+import 'package:app/features/recipes/data/recipe_service.dart';
 import 'package:app/core/logger.dart';
 
 class RecipeProvider with ChangeNotifier {
